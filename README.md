@@ -7,6 +7,7 @@ How to run:
 - The app listens on the preview port configured by the environment (default embedded server port). In the Kavia preview environment, use the provided URL.
 
 API docs:
+- Docs redirect: /docs (redirects to Swagger UI)
 - Swagger UI: /swagger-ui.html (configured via springdoc)
 - OpenAPI JSON: /api-docs (configured via springdoc)
 
@@ -23,3 +24,4 @@ Validation:
 
 H2:
 - H2 console enabled at /h2-console (dev). Schema auto-generated via JPA (ddl-auto=create-drop).
+- In-memory URL: jdbc:h2:mem:notesdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE to prevent shutdown warnings and ensure DB stays alive during app lifecycle.
