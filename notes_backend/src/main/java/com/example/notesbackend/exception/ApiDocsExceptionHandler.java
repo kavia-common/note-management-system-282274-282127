@@ -33,8 +33,8 @@ public class ApiDocsExceptionHandler {
         
         // Only handle exceptions for API docs endpoints
         if (!isApiDocsEndpoint(path)) {
-            // Re-throw to let GlobalExceptionHandler or default handler deal with it
-            throw new RuntimeException(ex);
+            // Return null to let other handlers process this exception
+            return null;
         }
 
         String method = request.getMethod();
