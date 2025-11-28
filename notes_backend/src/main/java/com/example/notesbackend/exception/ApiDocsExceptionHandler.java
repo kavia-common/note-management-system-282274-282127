@@ -1,0 +1,87 @@
+package com.example.notesbackend.exception;
+
+import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
+import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * Specialized exception handler for API documentation endpoints.
+ * Logs detailed exception information in structured format for diagnostics.
+ * Has higher precedence than GlobalExceptionHandler to catch API docs errors first.
+ */
+@ControllerAdvice
+@Order(-100)
+public class ApiDocsExceptionHandler {
+
+    private static final Logger logger = LoggerFactory.getLogger(ApiDocsExceptionHandler.class);
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Map<String, Object>> handleApiDocsException(Exception ex, HttpServletRequest request) {
+        String path = request.getRequestURI();
+        
+        // Only handle exceptions for API docs endpoints
+        if (!isApiDocsEndpoint(path)) {
+            // Re-throw to let GlobalExceptionHandler or default handler deal with it
+            throw new RuntimeException(ex);
+        }
+
+        String method = request.getMethod();
+        
+        // Add MDC context for structured logging
+        MDC.put("path", path);
+        MDC.put("method", method);
+        MDC.put("exception_type", ex.getClass().getName());
+        
+        try {
+            // Log comprehensive error details
+            logger.error("API_DOCS_EXCEPTION: path={} method={} exception_type={} exception_message={} " +
+                    "query_string={} remote_addr={} user_agent={} stack_trace={}", 
+                    path, 
+                    method, 
+                    ex.getClass().getName(), 
+                    ex.getMessage(),
+                    request.getQueryString(),
+                    request.getRemoteAddr(),
+                    request.getHeader("User-Agent"),
+                    getFullStackTrace(ex));
+            
+            // Return a structured error response
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("timestamp", Instant.now().toString());
+            errorResponse.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+            errorResponse.put("error", "Internal Server Error");
+            errorResponse.put("message", "Error generating API documentation");
+            errorResponse.put("path", path);
+            errorResponse.put("exceptionType", ex.getClass().getSimpleName());
+            
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        } finally {
+            MDC.clear();
+        }
+    }
+
+    private boolean isApiDocsEndpoint(String path) {
+        return path != null && (path.contains("/api-docs") || path.contains("/v3/api-docs"));
+    }
+
+    private String getFullStackTrace(Exception ex) {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        ex.printStackTrace(pw);
+        String fullTrace = sw.toString();
+        // Truncate if too long for log line
+        return fullTrace.length() > 2000 ? fullTrace.substring(0, 2000) + "...(truncated)" : fullTrace;
+    }
+}

@@ -12,6 +12,23 @@ API docs:
 - OpenAPI JSON: /api-docs (configured via springdoc, also available at /v3/api-docs)
   Tip: If a tool expects the default path, try /v3/api-docs to compare responses. The JSON must include the top-level field "openapi": "3.x.y".
 
+Health & Diagnostics:
+- GET /health -> Returns {"status":"UP", "database": {...}} - Always returns 200 OK even if DB check fails
+  - Use this endpoint for basic health monitoring and to verify the application is running
+  - The database field includes optional DB connectivity info but won't fail the endpoint
+  - Logs detailed diagnostics at INFO/WARN level for DB connection status
+
+Diagnostics Logging:
+- API docs requests (/api-docs, /v3/api-docs) are logged with detailed structured information
+- Check application logs for entries prefixed with:
+  - API_DOCS_REQUEST_START: Request initiated
+  - API_DOCS_REQUEST_SUCCESS: Successful completion with timing
+  - API_DOCS_REQUEST_FAILURE: HTTP 4xx/5xx responses with details
+  - API_DOCS_REQUEST_ERROR: Exceptions during request processing
+  - API_DOCS_EXCEPTION: Detailed exception logging with full stack traces
+- Logs include: path, method, status, duration_ms, exception_type, exception_message, stack_trace, remote_addr, user_agent
+- MDC fields available: path, method, remote_addr, user_agent, exception_type
+
 Endpoints:
 - POST /api/notes -> create note (body: { "title": "t", "content": "c" })
 - GET /api/notes -> list notes (optional ?page=&size=)
