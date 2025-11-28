@@ -55,7 +55,18 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
-// Explicitly declare the Spring Boot main application class so bootRun/test can resolve it
+/**
+ * Explicitly declare the Spring Boot main application class so bootRun/test can resolve it.
+ * Gradle 8 + Spring Boot plugin 3 supports this DSL. We also set the mainClass for JavaExec/bootRun to be extra explicit.
+ */
 springBoot {
     mainClass = 'com.example.notesbackend.NotesbackendApplication'
+}
+
+tasks.withType(JavaExec).configureEach {
+    mainClass.set('com.example.notesbackend.NotesbackendApplication')
+}
+
+tasks.named('bootRun').configure {
+    mainClass.set('com.example.notesbackend.NotesbackendApplication')
 }
