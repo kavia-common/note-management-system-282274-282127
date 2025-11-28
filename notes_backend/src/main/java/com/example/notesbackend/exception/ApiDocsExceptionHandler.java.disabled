@@ -17,17 +17,29 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Specialized exception handler for API documentation endpoints.
+ * DISABLED: This exception handler is incompatible with Spring Boot 3.4.x and Springdoc.
+ * 
+ * The approach of returning null to delegate to other handlers does not work correctly
+ * in Spring Boot 3.4.x and causes NoSuchMethodError and ServletException issues.
+ * 
+ * Diagnostic logging is still available via ApiDocsLoggingInterceptor.
+ * 
+ * Original purpose: Specialized exception handler for API documentation endpoints.
  * Logs detailed exception information in structured format for diagnostics.
  * Has higher precedence than GlobalExceptionHandler to catch API docs errors first.
+ * 
+ * REASON FOR DISABLING:
+ * - Returning null from @ExceptionHandler in Spring Boot 3.4.x doesn't properly delegate
+ * - Interferes with Springdoc's native exception handling
+ * - Causes ServletException and NoResourceFoundException to be mishandled
  */
-@ControllerAdvice
-@Order(-100)
+// @ControllerAdvice  // DISABLED - commented out to prevent Spring from registering this handler
+// @Order(-100)
 public class ApiDocsExceptionHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(ApiDocsExceptionHandler.class);
 
-    @ExceptionHandler(Exception.class)
+    // @ExceptionHandler(Exception.class)  // DISABLED
     public ResponseEntity<Map<String, Object>> handleApiDocsException(Exception ex, HttpServletRequest request) {
         String path = request.getRequestURI();
         
