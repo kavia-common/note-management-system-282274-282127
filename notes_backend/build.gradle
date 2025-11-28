@@ -50,3 +50,8 @@ tasks.named('check') {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+// Explicitly declare the Spring Boot main application class so bootRun/test can resolve it
+springBoot {
+    mainClass = 'com.example.notesbackend.NotesbackendApplication'
+}
