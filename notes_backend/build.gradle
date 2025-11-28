@@ -57,32 +57,8 @@ tasks.named('test') {
 
 /**
  * Explicitly declare the Spring Boot main application class so bootRun/test can resolve it.
- * We also set application/mainClass for additional Gradle compatibility across tasks.
+ * Keep a single authoritative location to avoid ambiguity.
  */
-def mainClassFqn = 'com.example.notesbackend.NotesbackendApplication'
-
 springBoot {
-    mainClass = mainClassFqn
-}
-
-// For compatibility with tasks using ApplicationPlugin conventions (if applied implicitly by Boot plugin)
-extensions.findByName("application")?.with {
-    // Gradle 8+ property
-    if (hasProperty('mainClass')) {
-        mainClass = mainClassFqn
-    }
-    // Legacy property still recognized by some tooling
-    if (hasProperty('mainClassName')) {
-        mainClassName = mainClassFqn
-    }
-}
-
-// Ensure all JavaExec tasks default to the same main class unless overridden
-tasks.withType(JavaExec).configureEach {
-    mainClass.set(mainClassFqn)
-}
-
-// Be explicit for bootRun
-tasks.named('bootRun').configure {
-    mainClass.set(mainClassFqn)
+    mainClass = 'com.example.notesbackend.NotesbackendApplication'
 }
