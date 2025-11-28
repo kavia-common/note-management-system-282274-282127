@@ -9,7 +9,8 @@ How to run:
 API docs:
 - Docs redirect: /docs (redirects to Swagger UI)
 - Swagger UI: /swagger-ui.html (configured via springdoc)
-- OpenAPI JSON: /api-docs (configured via springdoc)
+- OpenAPI JSON: /api-docs (configured via springdoc, also available at /v3/api-docs)
+  Tip: If a tool expects the default path, try /v3/api-docs to compare responses. The JSON must include the top-level field "openapi": "3.x.y".
 
 Endpoints:
 - POST /api/notes -> create note (body: { "title": "t", "content": "c" })
