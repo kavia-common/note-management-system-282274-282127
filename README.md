@@ -7,8 +7,8 @@ How to run:
 - The app listens on the preview port configured by the environment (default embedded server port). In the Kavia preview environment, use the provided URL.
 
 API docs:
-- Swagger UI: /swagger-ui.html
-- OpenAPI JSON: /api-docs
+- Swagger UI: /swagger-ui.html (configured via springdoc)
+- OpenAPI JSON: /api-docs (configured via springdoc)
 
 Endpoints:
 - POST /api/notes -> create note (body: { "title": "t", "content": "c" })
